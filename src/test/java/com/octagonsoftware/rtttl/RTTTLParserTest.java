@@ -161,4 +161,15 @@ public class RTTTLParserTest {
             // pass
         }
     }
+
+    @Test
+    public void testNoControlSection()
+        throws ParseException
+    {
+        RTTTLParser parser = new RTTTLParser();
+
+        ToneSequence toneSequence = parser.parse("name::c,d,e");
+        Assert.assertEquals("name", toneSequence.name);
+        Assert.assertEquals(3, toneSequence.toneList.size());
+    }
 }

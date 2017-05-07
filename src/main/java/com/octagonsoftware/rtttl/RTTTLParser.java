@@ -110,6 +110,10 @@ public class RTTTLParser {
     private void processControlPair(ParseContext context, String controlPairStr)
         throws ParseException
     {
+        if ("".equals(controlPairStr)) {
+            return;
+        }
+
         String[] parts = controlPairStr.split("=");
         assertSyntax(parts.length == 2, "Expected 'name'='value' in control section");
 
