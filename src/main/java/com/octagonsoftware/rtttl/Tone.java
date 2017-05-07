@@ -45,6 +45,11 @@ public class Tone {
         this.durationInSeconds = durationInSeconds;
     }
 
+    /** Returns true if this tone is a rest (i.e. there is no note) */
+    public boolean isRest() {
+        return note == null;
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) {
             return true;

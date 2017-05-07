@@ -107,7 +107,9 @@ public class RTTTLParserTest {
         Assert.assertEquals(Note.D4, toneSequence.toneList.get(3).note);
         Assert.assertEquals(Note.E4, toneSequence.toneList.get(4).note);
         Assert.assertNull(toneSequence.toneList.get(5).note);
+        Assert.assertTrue(toneSequence.toneList.get(5).isRest());
         Assert.assertEquals(Note.F4, toneSequence.toneList.get(6).note);
+        Assert.assertFalse(toneSequence.toneList.get(6).isRest());
     }
 
     @Test
