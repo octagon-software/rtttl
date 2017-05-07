@@ -8,10 +8,16 @@
     <packaging>jar</packaging>
 
     <name>rtttl</name>
+    <description>
+        Parser for the Ring Tone Text Transfer Language (RTTTL) and various utilities for working with
+        notes and frequencies.
+    </description>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <reporting>
