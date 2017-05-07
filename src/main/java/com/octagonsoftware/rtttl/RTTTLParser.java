@@ -80,17 +80,14 @@ public class RTTTLParser {
     public ToneSequence parse(String str)
         throws ParseException
     {
-        // Remove whitespace
-        str = str.replaceAll(" ", "").toLowerCase();
-
         // RTTTLString := <name> ":" <control-section> ":" <tone-section>
         String[] parts = str.split(":");
-        assertSyntax(parts.length == 3, "Expected 3 ':'s but got " + parts.length);
+        assertSyntax(parts.length == 3, "Expected 2 ':'s but got " + (parts.length - 1));
 
         ParseContext context = new ParseContext();
         String name = parts[0];
-        parseControlSection(context, parts[1]);
-        parseToneSection(context, parts[2]);
+        parseControlSection(context, parts[1].replaceAll(" ", ""));
+        parseToneSection(context, parts[2].replaceAll(" ", ""));
 
         return new ToneSequence(name, context.toneList);
     }

@@ -36,7 +36,9 @@ public class RTTTLParserTest {
         throws ParseException
     {
         RTTTLParser parser = new RTTTLParser();
-        Assert.assertEquals(2, parser.parse("a:d=4:c6, d6").toneList.size());
+        ToneSequence toneSequence = parser.parse("Ba Ba:d=4:c6, d6");
+        Assert.assertEquals(2, toneSequence.toneList.size());
+        Assert.assertEquals("Ba Ba", toneSequence.name);
     }
 
     @Test
