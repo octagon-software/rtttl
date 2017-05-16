@@ -126,7 +126,6 @@ public class PlayRTTTL {
         }
         out.close();
 
-        PlaPlayRTTTLTL
         Clip clip = AudioSystem.getClip();
         clip.open(new AudioFormat(SAMPLE_RATE, 32, 1, true, true),
             out.toByteArray(), 0, out.size());
