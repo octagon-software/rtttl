@@ -58,15 +58,6 @@ public class RTTTLParser {
     /** Name used in a control pair to indicate default defaultOctave */
     private static final char CONTROL_NAME_DEFAULT_OCTAVE = 'o';
 
-    /** Assumed beats per minute if not specified using a control pair. */
-    private static final int DEFAULT_BEATS_PER_MINUTE = 63;
-
-    /** Assumed duration if not specified using a control pair. */
-    private static final int DEFAULT_DURATION = 4;
-
-    /** Assumed defaultOctave if not specified using a control pair. */
-    private static final int DEFAULT_OCTAVE = 6;
-
     private static final Pattern PATTERN_NOTE = Pattern.compile("(\\d{1,2})?([pcdefgab]#?)(\\d)?");
 
 
@@ -268,9 +259,9 @@ public class RTTTLParser {
      * State for the RTTTL parser.
      */
     private static class ParseContext {
-        int defaultDuration = DEFAULT_DURATION;
-        int defaultOctave = DEFAULT_OCTAVE;
-        int beatsPerMinute = DEFAULT_BEATS_PER_MINUTE;
+        int defaultDuration = ToneSequence.DEFAULT_DURATION;
+        int defaultOctave = ToneSequence.DEFAULT_OCTAVE;
+        int beatsPerMinute = ToneSequence.DEFAULT_BEATS_PER_MINUTE;
         public List<Tone> toneList = new ArrayList<Tone>();
     }
 }
