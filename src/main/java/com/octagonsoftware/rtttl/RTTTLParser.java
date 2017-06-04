@@ -40,23 +40,30 @@ import java.util.regex.Pattern;
  * <p>
  * This parser is a bit looser than the original specification, in that:
  * <ol>
- *   <li>It allows longer names than the original 10 character limit.</li>
- *   <li>It allows octaves 0-8 instead of the original limit of 4-7.</li>
- *   <li>The special duration '.' can appear anywhere in the note string.</li>
+ * <li>It allows longer names than the original 10 character limit.</li>
+ * <li>It allows octaves 0-8 instead of the original limit of 4-7.</li>
+ * <li>The special duration '.' can appear anywhere in the note string.</li>
  * </ol>
  *
  * @see <a href="http://www.panuworld.net/nuukiaworld/download/nokix/rtttl.htm">RTTTL Specification</a>
  */
-public class RTTTLParser {
+public class RTTTLParser
+{
 
-    /** Name used in a control pair to indicate beats per minute */
-    private static final char CONTROL_NAME_BEATS_PER_MINUTE = 'b';
+    /**
+     * Name used in a control pair to indicate quarterNoteBeats per minute
+     */
+    static final char CONTROL_NAME_BEATS_PER_MINUTE = 'b';
 
-    /** Name used in a control pair to indicate default duration */
-    private static final char CONTROL_NAME_DEFAULT_DURATION = 'd';
+    /**
+     * Name used in a control pair to indicate default duration
+     */
+    static final char CONTROL_NAME_DEFAULT_DURATION = 'd';
 
-    /** Name used in a control pair to indicate default defaultOctave */
-    private static final char CONTROL_NAME_DEFAULT_OCTAVE = 'o';
+    /**
+     * Name used in a control pair to indicate default defaultOctave
+     */
+    static final char CONTROL_NAME_DEFAULT_OCTAVE = 'o';
 
     private static final Pattern PATTERN_NOTE = Pattern.compile("(\\d{1,2})?([pcdefgab]#?)(\\d)?");
 
@@ -80,7 +87,7 @@ public class RTTTLParser {
         parseControlSection(context, parts[1].replaceAll(" ", ""));
         parseToneSection(context, parts[2].replaceAll(" ", ""));
 
-        return new ToneSequence(name, context.toneList);
+        return new ToneSequence(name, context.toneList, context.defaultOctave, context.defaultDuration, context.beatsPerMinute);
     }
 
     /**
@@ -126,7 +133,7 @@ public class RTTTLParser {
                 context.defaultOctave = value;
                 break;
             case CONTROL_NAME_DEFAULT_DURATION:
-                context.defaultDuration = value;
+                context.defaultDuration = durationIntToDuration(value);
                 break;
             case CONTROL_NAME_BEATS_PER_MINUTE:
                 context.beatsPerMinute = value;
@@ -196,26 +203,19 @@ public class RTTTLParser {
         String noteStr = matcher.group(2);
         String octaveStr = matcher.group(3);
 
-        int duration;
+        Duration duration;
         if (durationStr == null) {
             duration = context.defaultDuration;
         } else {
             try {
-                duration = Integer.parseInt(durationStr);
+                duration = durationIntToDuration(Integer.parseInt(durationStr));
             } catch (NumberFormatException e) {
                 throw new ParseException("Invalid duration: " + durationStr, 0);
             }
-            if ((duration != 1) && (duration != 2) && (duration != 4) && (duration != 8) && (duration != 16) && (duration != 32)) {
-                throw new ParseException("Duration must be one of 1, 2, 4, 8, 16, or 32.", 0);
-            }
         }
-        float beats = 4.0f / duration;
         if (specialDuration) {
-            beats *= 1.5f;
+            duration = duration.asDotted();
         }
-
-        float secondsPerBeat = 60.0f / context.beatsPerMinute;
-        float durationInSeconds = beats * secondsPerBeat;
 
         int octave;
         if (octaveStr == null) {
@@ -239,7 +239,7 @@ public class RTTTLParser {
             }
         }
 
-        Tone tone = new Tone(note, durationInSeconds);
+        Tone tone = new Tone(note, duration);
 
         context.toneList.add(tone);
     }
@@ -258,10 +258,36 @@ public class RTTTLParser {
     /**
      * State for the RTTTL parser.
      */
-    private static class ParseContext {
-        int defaultDuration = ToneSequence.DEFAULT_DURATION;
+    private static class ParseContext
+    {
+        Duration defaultDuration = ToneSequence.DEFAULT_DURATION;
         int defaultOctave = ToneSequence.DEFAULT_OCTAVE;
         int beatsPerMinute = ToneSequence.DEFAULT_BEATS_PER_MINUTE;
         public List<Tone> toneList = new ArrayList<Tone>();
     }
+
+    /**
+     * Convert an int to a duration (4 = quarter note).
+     */
+    private Duration durationIntToDuration(int value)
+        throws ParseException
+    {
+        switch (value) {
+            case 1:
+                return Duration.WHOLE;
+            case 2:
+                return Duration.HALF;
+            case 4:
+                return Duration.QUARTER;
+            case 8:
+                return Duration.EIGHTH;
+            case 16:
+                return Duration.SIXTEENTH;
+            case 32:
+                return Duration.THIRTY_SECOND;
+            default:
+                throw new ParseException("Duration must be one of 1, 2, 4, 8, 16, or 32.", 0);
+        }
+    }
+
 }

@@ -121,28 +121,16 @@ public class RTTTLParserTest {
         RTTTLParser parser = new RTTTLParser();
 
         ToneSequence toneSequence = parser.parse("name:b=60:a,1a,2a,4a,8a,16a,32a,1a.,2a.,4a.");
-        Assert.assertEquals(1.0, toneSequence.toneList.get(0).durationInSeconds, EPSILON);
-        Assert.assertEquals(4.0, toneSequence.toneList.get(1).durationInSeconds, EPSILON);
-        Assert.assertEquals(2.0, toneSequence.toneList.get(2).durationInSeconds, EPSILON);
-        Assert.assertEquals(1.0, toneSequence.toneList.get(3).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.5, toneSequence.toneList.get(4).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.25, toneSequence.toneList.get(5).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.125, toneSequence.toneList.get(6).durationInSeconds, EPSILON);
-        Assert.assertEquals(6.0, toneSequence.toneList.get(7).durationInSeconds, EPSILON);
-        Assert.assertEquals(3.0, toneSequence.toneList.get(8).durationInSeconds, EPSILON);
-        Assert.assertEquals(1.5, toneSequence.toneList.get(9).durationInSeconds, EPSILON);
-
-        toneSequence = parser.parse("name:b=120:a,1a,2a,4a,8a,16a,32a,1a.,2a.,4a.");
-        Assert.assertEquals(0.5, toneSequence.toneList.get(0).durationInSeconds, EPSILON);
-        Assert.assertEquals(2.0, toneSequence.toneList.get(1).durationInSeconds, EPSILON);
-        Assert.assertEquals(1.0, toneSequence.toneList.get(2).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.5, toneSequence.toneList.get(3).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.25, toneSequence.toneList.get(4).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.125, toneSequence.toneList.get(5).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.0625, toneSequence.toneList.get(6).durationInSeconds, EPSILON);
-        Assert.assertEquals(3.0, toneSequence.toneList.get(7).durationInSeconds, EPSILON);
-        Assert.assertEquals(1.5, toneSequence.toneList.get(8).durationInSeconds, EPSILON);
-        Assert.assertEquals(0.75, toneSequence.toneList.get(9).durationInSeconds, EPSILON);
+        Assert.assertEquals(Duration.QUARTER, toneSequence.toneList.get(0).duration);
+        Assert.assertEquals(Duration.WHOLE, toneSequence.toneList.get(1).duration);
+        Assert.assertEquals(Duration.HALF, toneSequence.toneList.get(2).duration);
+        Assert.assertEquals(Duration.QUARTER, toneSequence.toneList.get(3).duration);
+        Assert.assertEquals(Duration.EIGHTH, toneSequence.toneList.get(4).duration);
+        Assert.assertEquals(Duration.SIXTEENTH, toneSequence.toneList.get(5).duration);
+        Assert.assertEquals(Duration.THIRTY_SECOND, toneSequence.toneList.get(6).duration);
+        Assert.assertEquals(Duration.DOTTED_WHOLE, toneSequence.toneList.get(7).duration);
+        Assert.assertEquals(Duration.DOTTED_HALF, toneSequence.toneList.get(8).duration);
+        Assert.assertEquals(Duration.DOTTED_QUARTER, toneSequence.toneList.get(9).duration);
     }
 
     @Test
@@ -183,5 +171,17 @@ public class RTTTLParserTest {
         ToneSequence toneSequence = parser.parse("name::c,d,e");
         Assert.assertEquals("name", toneSequence.name);
         Assert.assertEquals(3, toneSequence.toneList.size());
+    }
+
+    @Test
+    public void testDefaultsParsed()
+        throws ParseException
+    {
+        RTTTLParser parser = new RTTTLParser();
+
+        ToneSequence toneSequence = parser.parse("name:d=2,o=8,b=30:c,d,e");
+        Assert.assertEquals(Duration.HALF, toneSequence.defaultDuration);
+        Assert.assertEquals(8, toneSequence.defaultOctave);
+        Assert.assertEquals(30, toneSequence.beatsPerMinute);
     }
 }

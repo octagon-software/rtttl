@@ -32,7 +32,7 @@ Example:
 Simpsons:d=4,o=5,b=160:32p,c.6,e6,f#6,8a6,g.6,e6,c6,8a,8f#,8f#,8f#,2g
 
 This file describes a ringtone whose name is 'Simpsons'. The control section 
-sets the beats per minute at 160, the default note length as 4, and the default 
+sets the quarterNoteBeats per minute at 160, the default note length as 4, and the default 
 scale as Octave 5. 
 <RTX file> := <name> ":" [<control section>] ":" <tone-commands>
 
@@ -43,8 +43,8 @@ scale as Octave 5.
 		<control-pair> := <control-name> ["="] <control-value>
 
 		<control-name> := "o" | "d" | "b"
-		; Valid in control section: o=default scale, d=default duration, b=default beats per minute. 
-		; if not specified, defaults are 4=duration, 6=scale, 63=beats-per-minute
+		; Valid in control section: o=default scale, d=default duration, b=default quarterNoteBeats per minute. 
+		; if not specified, defaults are 4=duration, 6=scale, 63=quarterNoteBeats-per-minute
 		; any unknown control-names must be ignored
 
 		<tone-commands> := <tone-command> ["," <tone-commands>]
@@ -95,7 +95,7 @@ Check the unit tests for examples of how to use the API. In addition, here is
 a simple Java application that plays an RTTTL string provided as a command line
 argument:
 
-```Java
+```java
 import com.octagonsoftware.rtttl.RTTTLParser;
 import com.octagonsoftware.rtttl.Tone;
 import com.octagonsoftware.rtttl.ToneSequence;
@@ -117,11 +117,11 @@ public class PlayRTTTL {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (Tone tone : toneSequence.toneList) {
-            float durationInSeconds = tone.durationInSeconds;
+            float duration = tone.duration.secondsAtBeatsPerMinute(toneSequence.beatsPerMinute);
             if (tone.isRest()) {
-                rest(out, durationInSeconds);
+                rest(out, duration);
             } else {
-                beep(out, tone.note.hz, durationInSeconds);
+                beep(out, tone.note.hz, duration);
             }
         }
         out.close();
@@ -136,14 +136,14 @@ public class PlayRTTTL {
         clip.close();
     }
 
-    private static void rest(ByteArrayOutputStream out, float durationInSeconds) {
-        int sampleCount = (int) (SAMPLE_RATE * durationInSeconds);
+    private static void rest(ByteArrayOutputStream out, float duration) {
+        int sampleCount = (int) (SAMPLE_RATE * duration);
         byte[] buffer = new byte[sampleCount * 4];
         out.write(buffer, 0, sampleCount * 4);
     }
 
-    private static void beep(ByteArrayOutputStream out, float freq, float durationInSeconds) {
-        int sampleCount = (int) (SAMPLE_RATE * durationInSeconds);
+    private static void beep(ByteArrayOutputStream out, float freq, float duration) {
+        int sampleCount = (int) (SAMPLE_RATE * duration);
         byte[] buffer = new byte[sampleCount * 4];
         ByteBuffer byteBuffer = ByteBuffer.wrap(buffer).order(ByteOrder.BIG_ENDIAN);
         for (int i = 0; i < sampleCount; i++) {
@@ -152,4 +152,16 @@ public class PlayRTTTL {
         out.write(buffer, 0, sampleCount * 4);
     }
 }
+```
+
+# Encoding RTTTL Strings
+RTTTL Strings can also be encoded from a `ToneSequence`, as follows:
+
+```java
+import com.octagonsoftware.rtttl.RTTTLEncoder;
+import com.octagonsoftware.rtttl.ToneSequence;
+
+ToneSequence seq = ...;
+RTTTLEncoder encoder = new RTTTLEncoder();
+String rtttl = encoder.encode(seq);
 ```

@@ -29,11 +29,11 @@ import java.util.List;
  * Sequence of tones, each of which has a note and duration.
  */
 public class ToneSequence {
-    /** Assumed beats per minute if not specified using a control pair. */
+    /** Assumed quarterNoteBeats per minute if not specified using a control pair. */
     public static final int DEFAULT_BEATS_PER_MINUTE = 63;
 
     /** Assumed duration if not specified using a control pair. */
-    public static final int DEFAULT_DURATION = 4;
+    public static final Duration DEFAULT_DURATION = Duration.QUARTER;
 
     /** Assumed defaultOctave if not specified using a control pair. */
     public static final int DEFAULT_OCTAVE = 6;
@@ -45,17 +45,17 @@ public class ToneSequence {
     public final int defaultOctave;
 
     /** Default duration (used when encoding RTTTL strings) */
-    public final int defaultDuration;
+    public final Duration defaultDuration;
 
-    /** Default beats per minute (used when encoding RTTTL strings) */
-    public final int defaultBeatsPerMinute;
+    /** Quarter note beats per minute (used when encoding RTTTL strings) */
+    public final int beatsPerMinute;
 
     /** Sequential list of tones that make up this ring tone */
     public final List<Tone> toneList;
 
     /**
      * Creates a new ring tone, using the default octave ({@link #DEFAULT_OCTAVE}), default duration ({@link #DEFAULT_DURATION})
-     * and default beats per minute ({@link #DEFAULT_BEATS_PER_MINUTE}).
+     * and default quarterNoteBeats per minute ({@link #DEFAULT_BEATS_PER_MINUTE}).
      *
      * @param name The name of the ring tone
      * @param toneList The list of tones in this ring tone.
@@ -72,14 +72,13 @@ public class ToneSequence {
      * @param toneList The list of tones in this ring tone.
      * @param defaultOctave The default octave to use when converting this tone list into an RTTTL string. Must be an int
      *                      between 0 and 8, inclusive.
-     * @param defaultDuration The default duration to use when converting this tone list into an RTTTL string. The value 4
-     *                        represents a quarter note. Must be one of 1, 2, 4, 8, 16, or 32.
-     * @param defaultBeatsPerMinute The default beats per minute to use when converting this tone list into an RTTTL string.
-     *                              Must be greater than 0.
+     * @param defaultDuration The default duration to use when converting this tone list into an RTTTL string.
+     * @param beatsPerMinute The quarter note beats per minute to use when converting this tone list into an RTTTL string.
+ *                           Must be greater than 0.
      * @throws IllegalArgumentException If either the name or toneList is null.
      */
-    public ToneSequence(String name, List<Tone> toneList, int defaultOctave, int defaultDuration,
-        int defaultBeatsPerMinute)
+    public ToneSequence(String name, List<Tone> toneList, int defaultOctave, Duration defaultDuration,
+        int beatsPerMinute)
     {
         if (name == null) {
             throw new IllegalArgumentException("name cannot be null.");
@@ -90,19 +89,14 @@ public class ToneSequence {
         if (defaultOctave < 0 || defaultOctave > 8) {
             throw new IllegalArgumentException("octave must be between 0-8, inclusive.");
         }
-        if (defaultDuration != 1 && defaultDuration != 2 && defaultDuration != 4 && defaultDuration != 8 && defaultDuration != 16
-            && defaultDuration != 32)
-        {
-            throw new IllegalArgumentException("duration must be 1, 2, 4, 8, 16 or 32.");
-        }
-        if (defaultBeatsPerMinute <= 0) {
-            throw new IllegalArgumentException("beats per minute must be > 0.");
+        if (beatsPerMinute <= 0) {
+            throw new IllegalArgumentException("quarterNoteBeats per minute must be > 0.");
         }
         this.name = name;
         this.toneList = toneList;
         this.defaultOctave = defaultOctave;
         this.defaultDuration = defaultDuration;
-        this.defaultBeatsPerMinute = defaultBeatsPerMinute;
+        this.beatsPerMinute = beatsPerMinute;
     }
 
     @Override public boolean equals(Object o) {
@@ -118,24 +112,24 @@ public class ToneSequence {
         if (defaultOctave != that.defaultOctave) {
             return false;
         }
+        if (beatsPerMinute != that.beatsPerMinute) {
+            return false;
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
         if (defaultDuration != that.defaultDuration) {
             return false;
         }
-        if (defaultBeatsPerMinute != that.defaultBeatsPerMinute) {
-            return false;
-        }
-        if (!name.equals(that.name)) {
-            return false;
-        }
-        return toneList.equals(that.toneList);
+        return toneList != null ? toneList.equals(that.toneList) : that.toneList == null;
     }
 
     @Override public int hashCode() {
-        int result = name.hashCode();
+        int result = name != null ? name.hashCode() : 0;
         result = 31 * result + defaultOctave;
-        result = 31 * result + defaultDuration;
-        result = 31 * result + defaultBeatsPerMinute;
-        result = 31 * result + toneList.hashCode();
+        result = 31 * result + (defaultDuration != null ? defaultDuration.hashCode() : 0);
+        result = 31 * result + beatsPerMinute;
+        result = 31 * result + (toneList != null ? toneList.hashCode() : 0);
         return result;
     }
 
@@ -144,7 +138,7 @@ public class ToneSequence {
             "name='" + name + '\'' +
             ", defaultOctave=" + defaultOctave +
             ", defaultDuration=" + defaultDuration +
-            ", defaultBeatsPerMinute=" + defaultBeatsPerMinute +
+            ", beatsPerMinute=" + beatsPerMinute +
             ", toneList=" + toneList +
             '}';
     }

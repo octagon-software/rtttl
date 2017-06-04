@@ -42,7 +42,7 @@ public class ToneSequenceTest {
         Assert.assertEquals(toneList, seq.toneList);
         Assert.assertEquals(ToneSequence.DEFAULT_OCTAVE, seq.defaultOctave);
         Assert.assertEquals(ToneSequence.DEFAULT_DURATION, seq.defaultDuration);
-        Assert.assertEquals(ToneSequence.DEFAULT_BEATS_PER_MINUTE, seq.defaultBeatsPerMinute);
+        Assert.assertEquals(ToneSequence.DEFAULT_BEATS_PER_MINUTE, seq.beatsPerMinute);
     }
 
     @Test
@@ -50,21 +50,21 @@ public class ToneSequenceTest {
         List<Tone> toneList = createToneList();
         String toneName = "name";
         int octave = ToneSequence.DEFAULT_OCTAVE + 1;
-        int duration = ToneSequence.DEFAULT_DURATION * 2;
+        Duration duration = Duration.HALF;
         int beatsPerMinute = ToneSequence.DEFAULT_BEATS_PER_MINUTE + 1;
         ToneSequence seq = new ToneSequence(toneName, toneList, octave, duration, beatsPerMinute);
         Assert.assertEquals(toneName, seq.name);
         Assert.assertEquals(toneList, seq.toneList);
         Assert.assertEquals(octave, seq.defaultOctave);
         Assert.assertEquals(duration, seq.defaultDuration);
-        Assert.assertEquals(beatsPerMinute, seq.defaultBeatsPerMinute);
+        Assert.assertEquals(beatsPerMinute, seq.beatsPerMinute);
     }
 
     @Test
     public void testInvalidOctave() {
         List<Tone> toneList = createToneList();
         String toneName = "name";
-        int duration = ToneSequence.DEFAULT_DURATION * 2;
+        Duration duration = Duration.HALF;
         int beatsPerMinute = ToneSequence.DEFAULT_BEATS_PER_MINUTE + 1;
         try {
             int octave = -1;
@@ -83,26 +83,11 @@ public class ToneSequenceTest {
     }
 
     @Test
-    public void testInvalidDuration() {
-        List<Tone> toneList = createToneList();
-        String toneName = "name";
-        int octave = ToneSequence.DEFAULT_OCTAVE + 1;
-        int beatsPerMinute = ToneSequence.DEFAULT_BEATS_PER_MINUTE + 1;
-        try {
-            int duration = 9;
-            new ToneSequence(toneName, toneList, octave, duration, beatsPerMinute);
-            Assert.fail("Should have failed with IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            // pass
-        }
-    }
-
-    @Test
     public void testInvalidBeatsPerMinute() {
         List<Tone> toneList = createToneList();
         String toneName = "name";
         int octave = ToneSequence.DEFAULT_OCTAVE + 1;
-        int duration = ToneSequence.DEFAULT_DURATION * 2;
+        Duration duration = Duration.HALF;
         try {
             int beatsPerMinute = 0;
             new ToneSequence(toneName, toneList, octave, duration, beatsPerMinute);
@@ -114,8 +99,8 @@ public class ToneSequenceTest {
 
     private List<Tone> createToneList() {
         List<Tone> result = new ArrayList<Tone>();
-        result.add(new Tone(Note.A4, 1.0f));
-        result.add(new Tone(null, 1.0f));
+        result.add(new Tone(Note.A4, Duration.QUARTER));
+        result.add(new Tone(null, Duration.QUARTER));
         return result;
     }
 }
