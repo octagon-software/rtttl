@@ -15,6 +15,20 @@ To keep things lightweight, this library does not contain any code to actually
 play tone sequences. However, this documentation does contain some example
 code to do so (see last section, below).
 
+# Maven
+RTTTL is available as a Maven library:
+```xml
+<dependencies>
+    ...
+    <dependency>
+        <groupId>com.octagonsoftware</groupId>
+        <artifactId>rtttl</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    ...
+</dependencies>
+```
+
 # RTTTL Specification
 The following specification comes from [this website](http://www.panuworld.net/nuukiaworld/download/nokix/rtttl.htm)
 but other copies can be found floating around the Internet.
